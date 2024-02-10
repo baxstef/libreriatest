@@ -58,10 +58,16 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                Tables\Columns\TextColumn::make('user.name')
+                    ->label('Nome')
+                    ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('lastname')
+
+                Tables\Columns\TextColumn::make('user.lastname')
+                    ->label('Cognome')
+                    ->sortable()
                     ->searchable(),
+
                 Tables\Columns\TextColumn::make('email')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email_verified_at')

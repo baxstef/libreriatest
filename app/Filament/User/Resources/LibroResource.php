@@ -16,6 +16,10 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class LibroResource extends Resource
 {
     protected static ?string $model = Libro::class;
+    protected static ?string $label = 'Libri ';
+
+    protected static ?string $navigationLabel = 'Libri';
+
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -23,29 +27,53 @@ class LibroResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Forms\Components\TextInput::make('titolo')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('autore')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('codice_isbn')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\Textarea::make('trama')
+                    ->maxLength(65535)
+                    ->columnSpanFull(),
+                Forms\Components\TextInput::make('numero_di_letture_complete')
+                    ->required()
+                    ->numeric()
+                    ->default(0),
             ]);
     }
+
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('titolo')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('autore')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('codice_isbn')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('numero_di_letture_complete')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
             ])
-            ->filters([
-                Tables\Filters\TrashedFilter::make(),
-            ])
+            ->filters([])
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                    Tables\Actions\ForceDeleteBulkAction::make(),
-                    Tables\Actions\RestoreBulkAction::make(),
-                ]),
             ]);
     }
 
@@ -68,9 +96,7 @@ class LibroResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()
-            ->withoutGlobalScopes([
-                SoftDeletingScope::class,
-            ]);
+
+        return parent::getEloquentQuery()->where('user_id', auth()->id());
     }
 }
